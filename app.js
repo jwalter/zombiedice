@@ -51,6 +51,12 @@ app.get('/', function(req, res){
   });
 });
 
+app.get('/socketio', function(req, res){
+  res.render('socketio', {
+    title: 'Socket IO'
+  });
+});
+
 app.get('/user/:id', function(req, res, next){
   console.log('Show user');
   User.find(req.params.id, function(err, user){

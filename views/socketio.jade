@@ -1,0 +1,15 @@
+!!!5
+script(src='/socket.io/socket.io.js')
+script(src='http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js')
+script
+  var socket = io.connect();
+  socket.on('news', function (data) {
+    console.log(data);
+    socket.emit('my other event', { my: 'data' });
+  });
+  function sayHello() {
+    $('#hello').append('hello');
+  }
+
+button(onclick= 'javascript:sayHello()') Hello
+div(id='hello')
