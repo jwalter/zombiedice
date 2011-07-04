@@ -1,0 +1,42 @@
+﻿==Zombie dice==
+
+Lobby
+====
+action: createGame (params: gameName)
+action: joinGame (params: gameName, playerName)
+
+model: games Collection<Game>
+
+Game
+====
+action: start //stop waiting for more players
+
+model: state waitingForPlayers|running|finished
+
+Game.GameRound
+====
+action: roll (throws: NotEnoughDice, RoundNotActive) // Updates dices and roundState
+//action: readyDice // Picks up additional dice if needed
+//action: end
+
+model: dice Collection<Dice>
+model: roundState active|finished
+//model: result RoundResult
+
+//RoundResult
+//====
+//model: state dead|alive
+//model: brains int
+
+ResultBoard
+====
+action: addRound(params: Player, GameRound)
+-action: computeScore (params: GameRound)
+
+model: Collection<PlayerState>
+model: tokenOwner Player // Who is the currently active player?
+
+PlayerState
+====
+model: player Player
+model: score int
