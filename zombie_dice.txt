@@ -40,3 +40,17 @@ PlayerState
 ====
 model: player Player
 model: score int
+
+----------------------------
+Node.js
+
+Socket.io.js
+
+Backbone.js
+Underscore.js
+
+Icanhaz.js
+Mustasche.js
+
+Jquery
+JqueryUI
