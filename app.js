@@ -11,17 +11,17 @@ app.configure(function() {
   app.use(express.bodyParser());
   app.use(express.methodOverride());
   app.use(express.cookieParser());
-  app.use(express.session({ secret: 'your secret here' }));
+  app.use(express.session({ secret: 'brainsaredelicious' }));
   app.use(require('stylus').middleware({ src: __dirname + '/public' }));
   app.use(app.router);
   app.use(express.static(__dirname + '/public'));
 });
 
-app.configure('development', function(){
+app.configure('development', function() {
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); 
 });
 
-app.configure('production', function(){
+app.configure('production', function() {
   app.use(express.errorHandler()); 
 });
 
@@ -29,8 +29,17 @@ app.configure('production', function(){
 app.get('/', function(req, res) {
   res.render('index', {
     title: 'Zombie dice',
-    games: gameTracker.allGames()
+    games: gameTracker.allGames(),
+    name: req.session.name
   });
+});
+
+app.get('/name/:name', function(req, res) {
+  if (req.params) {
+    console.log('name: ' + req.params.name);
+    req.session.name = req.params.name;
+  }
+  res.redirect('/');
 });
 
 app.get('/roll', function(req, res) {

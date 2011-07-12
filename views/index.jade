@@ -9,7 +9,7 @@ script
 
 h1= title
 p 
-  button(onclick= 'javascript:sayHello()') Hello
+  button(onclick= 'javascript:sayHello()') Hello #{name}
   div(id='hello')
   ul#games
     != partial('games/game', games)
