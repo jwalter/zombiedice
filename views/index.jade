@@ -1,3 +1,15 @@
+script(src='http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js')
+script
+  function sayHello() {
+    $.getJSON('/roll', function(data) {
+        $('#hello').html('Server says: ' + data.dice + '<br>');
+      }
+    );
+  }
+
 h1= title
-p Click to view or list of 
-  a(href='users') Users
+p 
+  button(onclick= 'javascript:sayHello()') Hello
+  div(id='hello')
+  ul#games
+    != partial('games/game', games)

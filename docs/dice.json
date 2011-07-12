@@ -1,0 +1,6 @@
+{ dice : [
+ { face: "brain", color: "green" },
+ { face: "shotgun", color: "red" }
+]
+ ,status: "dead"
+}

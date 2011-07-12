@@ -19,10 +19,68 @@
 	},
 	"buffers":
 	[
+		{
+			"file": "/home/joakim/zombiedice/package.json",
+			"settings":
+			{
+				"buffer_size": 126,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/joakim/zombiedice/app.js",
+			"settings":
+			{
+				"buffer_size": 1969,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/joakim/zombiedice/views/_user.jade",
+			"settings":
+			{
+				"buffer_size": 43,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/joakim/zombiedice/views/users/show.jade",
+			"settings":
+			{
+				"buffer_size": 38,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/joakim/zombiedice/views/users/_user.jade",
+			"settings":
+			{
+				"buffer_size": 43,
+				"line_ending": "Unix"
+			}
+		}
 	],
 	"build_system": "",
+	"command_palette":
+	{
+		"height": 0,
+		"selected_items":
+		[
+		],
+		"width": 0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
 	"file_history":
 	[
+		"/home/joakim/zombiedice/views/index.jade",
+		"/home/joakim/zombiedice/views/users.jade",
 		"/home/joakim/.config/sublime-text-2/Packages/User/Base File.sublime-settings",
 		"/home/joakim/.config/sublime-text-2/Packages/Default/Base File.sublime-settings",
 		"/home/joakim/.config/sublime-text-2/Packages/Default/Global.sublime-settings"
@@ -67,8 +125,141 @@
 	"groups":
 	[
 		{
+			"selected": 1,
 			"sheets":
 			[
+				{
+					"buffer": 0,
+					"file": "/home/joakim/zombiedice/package.json",
+					"settings":
+					{
+						"buffer_size": 126,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JSON.tmLanguage"
+						},
+						"translation.x": 0,
+						"translation.y": 0,
+						"zoom_level": 1
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "/home/joakim/zombiedice/app.js",
+					"settings":
+					{
+						"buffer_size": 1969,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1528,
+								1528
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0,
+						"translation.y": 591,
+						"zoom_level": 1
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "/home/joakim/zombiedice/views/_user.jade",
+					"settings":
+					{
+						"buffer_size": 43,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								43
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0,
+						"translation.y": 0,
+						"zoom_level": 1
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "/home/joakim/zombiedice/views/users/show.jade",
+					"settings":
+					{
+						"buffer_size": 38,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								37,
+								37
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0,
+						"translation.y": 0,
+						"zoom_level": 1
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "/home/joakim/zombiedice/views/users/_user.jade",
+					"settings":
+					{
+						"buffer_size": 43,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								43,
+								43
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0,
+						"translation.y": 0,
+						"zoom_level": 1
+					},
+					"type": "text"
+				}
 			]
 		}
 	],

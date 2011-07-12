@@ -4,6 +4,8 @@
   "dependencies": {
     "express": "",
     "jade": "",
-    "stylus": ""
+    "stylus": "",
+    "backbone": "",
+    "underscore": ""
   }
 }
