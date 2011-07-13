@@ -1,16 +1,17 @@
 var assert = require('assert'),
-  gametracker = require('../lib/gametracker.js');
- 
+  GameTracker = require('../lib/gametracker.js'),
+  Game = require('../lib/game.js');
+
+var underTest = new GameTracker();
 module.exports = {
     'new gametracker should have zero games': function() {
-        assert.length(gametracker.allGames(), 0);
-
+        assert.length(underTest, 0);
     },
     'adding one game increases total number of games': function() {
-      gametracker.add('foo');
-      assert.length(gametracker.allGames(), 1);
+      underTest.add(new Game({name: 'foo'}));
+      assert.length(underTest, 1);
     },
     'name of added game should match parameter': function() {
-      assert.equal(gametracker.allGames()[0].name, 'foo');
+      assert.equal(underTest.at(0).name, 'foo');
     }
 };

@@ -2,7 +2,9 @@
 var express = require('express');
 require('jade');
 var app = module.exports = express.createServer();
-var gameTracker = require('./lib/gametracker');
+var Game = require('./lib/game');
+var GameTracker = require('./lib/gametracker');
+var gameTracker = new GameTracker();
 
 // Configuration
 app.configure(function() {
@@ -29,7 +31,7 @@ app.configure('production', function() {
 app.get('/', function(req, res) {
   res.render('index', {
     title: 'Zombie dice',
-    games: gameTracker.allGames(),
+    games: gameTracker.models,
     name: req.session.name
   });
 });
@@ -40,6 +42,20 @@ app.get('/name/:name', function(req, res) {
     req.session.name = req.params.name;
   }
   res.redirect('/');
+});
+
+app.post('/game/add', function(req, res) {
+  if (req.params) {
+    console.log('adding game "' + req.body.name + '"');
+    gameTracker.add(new Game({name: req.body.name}));
+  }
+  res.redirect('/');
+});
+
+app.get('/game/:id/roll', function(req, res) {
+  gameTracker.roll(req, function(data) {
+    res.send(data);
+  });
 });
 
 app.get('/roll', function(req, res) {
