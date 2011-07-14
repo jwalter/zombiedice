@@ -6,10 +6,18 @@ script
       }
     );
   }
+  function addGame() {
+    var name = prompt('Name of the game');
+    $.post("/game/add", { name: name }, function(data) {
+        $('#hello').html('Server says: ' + data.result + '<br>');
+      }
+    );
+  }
 
 h1= title
 p 
   button(onclick= 'javascript:sayHello()') Hello #{name}
+  button(onclick= 'javascript:addGame()') Create game
   div(id='hello')
   ul#games
     != partial('games/game', games)
