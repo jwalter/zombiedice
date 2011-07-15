@@ -11,6 +11,15 @@ module.exports = {
       g.alive = false;
       g.endTurn();
       assert.equal(g.alive, true);
+    },
+    'new game should be in waiting state': function() {
+      var g = new Game();
+      assert.equal(g.waitingForPlayers(), true);
+    },
+    'game should not be waiting for players when started': function() {
+      var g = new Game();
+      g.start();
+      assert.equal(g.waitingForPlayers(), false);
     }
 
 };
