@@ -58,6 +58,14 @@ app.get('/game/:id/roll', function(req, res) {
   });
 });
 
+app.get('/game/:id', function(req, res) {
+  game = gameTracker.getByCid(req.params.id);
+  res.render('games/index.jade', {
+    game: game,
+    title: game.name
+  });
+});
+
 app.get('/roll', function(req, res) {
   res.send({ dice: 'You rolled ' + Math.floor(Math.random()*11)});
 });
