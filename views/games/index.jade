@@ -1,3 +1,83 @@
+script(src='/socket.io/socket.io.js')
+script(src='http://ajax.cdnjs.com/ajax/libs/underscore.js/1.1.4/underscore-min.js')
+script(src='http://ajax.cdnjs.com/ajax/libs/backbone.js/0.3.3/backbone-min.js')
+script
+  var socket = io.connect();
+  socket.on('connect', function(data) {
+    socket.emit('join game', { data: '#{game.cid}'}, function(joined) {
+      $('#msgArea').html('Joined game: ' + joined);
+    });
+  });
+  socket.on('news', function (data) {
+    console.log(data);
+    socket.emit('my other event', { my: 'data' });
+  });
+  socket.on('roll', function (data) {
+    console.log(data);
+    $('#msgArea').html('Socketio says:' + data.dice);
+  });
+  var object = {};
+
+  _.extend(object, Backbone.Events);
+
+
+  function roll() {
+    $.getJSON('/roll', function(data) {
+      var friend_model = new Friend({ name: data.dice });
+      this.appView.friends.add(friend_model);
+        <!--$('#msgArea').html('Server says: ' + data.dice + '<br>');-->
+      }
+    );
+  }
+  function endTurn() {
+  }
 h1 #{title}
-p
+div(id='playArea')
   Your game: #{game.cid}
+  button(id='rollBtn', onclick= 'javascript:roll()') Roll
+  button(id='endTurnBtn', onclick= 'javascript:endTurn()') End turn
+  div(id='msgArea')
+div(id='scoreBoard')
+  button(id='add-friend') Add Friend
+  script
+    (function ($) {
+      Friend = Backbone.Model.extend({
+        name: null
+      });
+    
+      Friends = Backbone.Collection.extend({
+        initialize: function (models, options) {
+          this.bind("add", options.view.addFriendLi);
+        }
+      });
+    
+      AppView = Backbone.View.extend({
+        el: $('#scoreBoard'),
+        initialize: function () {
+          this.friends = new Friends( null, { view: this });
+        },
+        events: {
+          "click #add-friend":  "showPrompt",
+        },
+        showPrompt: function () {
+          var friend_name = prompt("Who is your friend?");
+          var friend_model = new Friend({ name: friend_name });
+          this.friends.add( friend_model );
+        },
+        addFriendLi: function (model) {
+          $("#scoreTable").append("<li>" + model.get('name') + "</li>");
+        }
+      });
+      object.bind("add", function(msg) {
+        alert("Triggered " + msg);
+      });
+      
+      var appview = new AppView;
+    })(jQuery);
+
+  Current score
+  div(id='scoreTable')
+    ul
+      - game.players.forEach(function(item){
+        li= item.name
+      - })

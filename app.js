@@ -2,8 +2,11 @@
 var express = require('express');
 require('jade');
 var app = module.exports = express.createServer();
+var io = require('socket.io').listen(app);
+
 var Game = require('./lib/game');
 var GameTracker = require('./lib/gametracker');
+var Player = require('./lib/player');
 var gameTracker = new GameTracker();
 
 // Configuration
@@ -26,13 +29,19 @@ app.configure('development', function() {
 app.configure('production', function() {
   app.use(express.errorHandler()); 
 });
-
+var pid = 0;
 // Routes
 app.get('/', function(req, res) {
+  if (!req.session.player) {
+    req.session.player = new Player({name: 'anonymous', id: pid});
+    pid = pid + 1;
+    console.log('Create new player: ' + req.session.player.cid);
+  }
   res.render('index', {
     title: 'Zombie dice',
     games: gameTracker.models,
-    name: req.session.name
+    name: req.session.name,
+    playerId: req.session.player.id
   });
 });
 
@@ -47,9 +56,10 @@ app.get('/name/:name', function(req, res) {
 app.post('/game/add', function(req, res) {
   if (req.params) {
     console.log('adding game "' + req.body.name + '"');
-    gameTracker.add(new Game({name: req.body.name}));
+    var g = new Game({name: req.body.name});
+    gameTracker.add(g);
   }
-  res.redirect('/');
+  res.send({result: 'Created new game '});
 });
 
 app.get('/game/:id/roll', function(req, res) {
@@ -59,16 +69,40 @@ app.get('/game/:id/roll', function(req, res) {
 });
 
 app.get('/game/:id', function(req, res) {
-  game = gameTracker.getByCid(req.params.id);
+  var game = gameTracker.getByCid(req.params.id);
+  var p = req.session.player;
+  console.log('Now id is: ' + p.id);
+  if (!game.players.get(p.id)) {
+    game.addPlayer(p);
+  }
   res.render('games/index.jade', {
     game: game,
     title: game.name
   });
 });
 
+// Prototype socketio stuff start
+var socks = new Array();
 app.get('/roll', function(req, res) {
+  for (i=0;i<socks.length;i++) {
+    socks[i].emit('roll', { dice: 'server rolled ' + Math.floor(Math.random()*11) });
+  }
   res.send({ dice: 'You rolled ' + Math.floor(Math.random()*11)});
 });
+
+io.sockets.on('connection', function (socket) {
+  socket.emit('news', { hello: 'world' });
+  socket.on('my other event', function (data) {
+    console.log(data);
+  });
+  socket.on('join game', function (data, fn) {
+    var g = gameTracker.getByCid(data);
+    console.log('Join game: ' + data);
+    fn('Success');
+  });
+  socks.push(socket);
+});
+// Prototype socketio stuff end
 
 app.listen(8080);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
