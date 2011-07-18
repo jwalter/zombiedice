@@ -33,7 +33,7 @@ var pid = 0;
 // Routes
 app.get('/', function(req, res) {
   if (!req.session.player) {
-    req.session.player = new Player({name: 'anonymous', id: pid});
+    req.session.player = new Player({name: 'anonymous'});
     pid = pid + 1;
     console.log('Create new player: ' + req.session.player.cid);
   }

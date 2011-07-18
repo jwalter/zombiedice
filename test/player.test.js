@@ -2,8 +2,9 @@ var assert = require('assert'),
   Player = require('../lib/player.js');
  
 module.exports = {
-    'player name should match constructor param': function() {
-      var p = new Player({ name: 'test player'});
-      assert.equal(p.name, 'test player');
+    'players should have unique ids': function() {
+      var p1 = new Player({ name: 'one'});
+      var p2 = new Player({ name: 'two'});
+      assert.notEqual(p1.id, p2.id);
     }
 };
