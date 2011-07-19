@@ -6,6 +6,7 @@
     "jade": "",
     "stylus": "",
     "backbone": "",
-    "underscore": ""
+    "underscore": "",
+    "node-uuid": ""
   }
 }
