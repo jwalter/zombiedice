@@ -5,7 +5,7 @@
     "express": "",
     "jade": "",
     "stylus": "",
-    "socket.io": "",
+    "socket.io": "0.6.18",
     "backbone": "",
     "underscore": "",
     "node-uuid": ""
