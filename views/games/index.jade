@@ -1,6 +1,9 @@
 script(src='/socket.io/socket.io.js')
+script(src='/javascripts/ICanHaz.min.js')
 script(src='http://ajax.cdnjs.com/ajax/libs/underscore.js/1.1.4/underscore-min.js')
 script(src='http://ajax.cdnjs.com/ajax/libs/backbone.js/0.3.3/backbone-min.js')
+script(id='die', type='text/html')
+  li A {{ color }} die with the {{ side }} side up
 script
   var socket = io.connect();
   socket.on('connect', function(data) {
@@ -14,7 +17,11 @@ script
   });
   socket.on('roll', function (data) {
     console.log(data);
-    $('#msgArea').html('Socketio says:' + data.dice);
+    $('#tableDice').html('');
+    _.each(data.dice, function(die) {
+      var die = ich.die(die);
+      $('#tableDice').append(die);
+    });
   });
   var object = {};
 
@@ -22,9 +29,7 @@ script
 
 
   function roll() {
-    $.getJSON('/roll', function(data) {
-      var friend_model = new Friend({ name: data.dice });
-      this.appView.friends.add(friend_model);
+    $.getJSON('/roll', function(dice) {
         <!--$('#msgArea').html('Server says: ' + data.dice + '<br>');-->
       }
     );
@@ -34,10 +39,28 @@ script
 h1 #{title}
 div(id='playArea')
   Your game: #{game.cid}
-  button(id='rollBtn', onclick= 'javascript:roll()') Roll
+  button(id='rollBtn') Roll
   button(id='endTurnBtn', onclick= 'javascript:endTurn()') End turn
+  script
+    (function ($) {
+    
+      TurnView = Backbone.View.extend({
+        el: $('#playArea'),
+        initialize: function () {
+        },
+        events: {
+          "click #rollBtn":  "performRoll",
+        },
+        performRoll: function () {
+          roll();
+        }
+      });
+      
+      turnview = new TurnView;
+    })(jQuery);
   div(id='msgArea')
 div(id='scoreBoard')
+  div(id='tableDice')
   button(id='add-friend') Add Friend
   script
     (function ($) {
@@ -51,18 +74,22 @@ div(id='scoreBoard')
         }
       });
     
-      AppView = Backbone.View.extend({
+      ScoreView = Backbone.View.extend({
         el: $('#scoreBoard'),
         initialize: function () {
           this.friends = new Friends( null, { view: this });
         },
         events: {
           "click #add-friend":  "showPrompt",
+          "click #rollBtn":  "performRoll",
         },
         showPrompt: function () {
           var friend_name = prompt("Who is your friend?");
           var friend_model = new Friend({ name: friend_name });
           this.friends.add( friend_model );
+        },
+        performRoll: function () {
+          roll();
         },
         addFriendLi: function (model) {
           $("#scoreTable").append("<li>" + model.get('name') + "</li>");
@@ -72,7 +99,7 @@ div(id='scoreBoard')
         alert("Triggered " + msg);
       });
       
-      var appview = new AppView;
+      scoreview = new ScoreView;
     })(jQuery);
 
   Current score

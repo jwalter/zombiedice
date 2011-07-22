@@ -84,11 +84,31 @@ app.get('/game/:id', function(req, res) {
 // Prototype socketio stuff start
 var socks = new Array();
 app.get('/roll', function(req, res) {
-  for (i=0;i<socks.length;i++) {
-    socks[i].emit('roll', { dice: 'server rolled ' + Math.floor(Math.random()*11) });
+  var dice = getDice();
+  for (i = 0; i < socks.length; i++) {
+    socks[i].emit('roll', { dice: dice });
   }
   res.send({ dice: 'You rolled ' + Math.floor(Math.random()*11)});
 });
+
+function getDice() {
+  var result = new Array();
+  for (var i = 0; i < 5; i++) {
+    rollDie(function(die) {
+      result[i] = die;
+    });
+  }
+  return result;
+}
+
+var dieColors = ["red", "yellow", "green"];
+var dieSides = ["shotgun", "feet", "brains"];
+
+function rollDie(fn) {
+  var colorIdx = Math.floor(Math.random()*3);
+  var sideIdx = Math.floor(Math.random()*3);
+  fn({color: dieColors[colorIdx], side: dieSides[sideIdx]});
+}
 
 io.sockets.on('connection', function (socket) {
   socket.emit('news', { hello: 'world' });

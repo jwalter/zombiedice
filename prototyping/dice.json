@@ -1,0 +1,9 @@
+{ dice:
+  [
+    {color: "red", side: "shotgun"},
+    {color: "green", side: "brains"},
+    {color: "yellow", side: "reroll"},
+    {color: "red", side: "brains"},
+    {color: "red", side: "brains"}
+  ]
+}
