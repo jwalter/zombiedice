@@ -81,14 +81,13 @@ app.get('/game/:id', function(req, res) {
   });
 });
 
-// Prototype socketio stuff start
 var socks = new Array();
 app.get('/roll', function(req, res) {
   var dice = getDice();
   for (i = 0; i < socks.length; i++) {
     socks[i].emit('roll', { dice: dice });
   }
-  res.send({ dice: 'You rolled ' + Math.floor(Math.random()*11)});
+  res.send('');
 });
 
 function getDice() {
