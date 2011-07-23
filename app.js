@@ -90,9 +90,10 @@ app.get('/roll', function(req, res) {
   res.send('');
 });
 
+// START Temporary dice stuf
 function getDice() {
   var result = new Array();
-  for (var i = 0; i < 5; i++) {
+  for (var i = 0; i < 3; i++) {
     rollDie(function(die) {
       result[i] = die;
     });
@@ -108,6 +109,7 @@ function rollDie(fn) {
   var sideIdx = Math.floor(Math.random()*3);
   fn({color: dieColors[colorIdx], side: dieSides[sideIdx]});
 }
+// END Temporary dice stuf
 
 io.sockets.on('connection', function (socket) {
   socket.emit('news', { hello: 'world' });
