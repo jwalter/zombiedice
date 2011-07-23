@@ -39,7 +39,7 @@ app.get('/', function(req, res) {
   res.render('index', {
     title: 'Zombie dice',
     games: gameTracker.models,
-    name: req.session.name,
+    name: req.session.player.name,
     playerId: req.session.player.id
   });
 });
@@ -47,7 +47,7 @@ app.get('/', function(req, res) {
 app.get('/name/:name', function(req, res) {
   if (req.params) {
     console.log('name: ' + req.params.name);
-    req.session.name = req.params.name;
+    req.session.player.name = req.params.name;
   }
   res.redirect('/');
 });
