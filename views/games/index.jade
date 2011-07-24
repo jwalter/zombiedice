@@ -12,11 +12,12 @@ script
     });
   });
   socket.on('news', function (data) {
-    console.log(data);
     socket.emit('my other event', { my: 'data' });
   });
   socket.on('roll', function (data) {
-    console.log(data);
+    table.addBrains(data.tableBrains);
+    table.addShotguns(data.tableShotguns);
+    tableview.render();
     $('#tableDice').html('');
     _.each(data.dice, function(die) {
       var die = ich.die(die);
@@ -27,24 +28,44 @@ script
 
   _.extend(object, Backbone.Events);
 
-
   function roll() {
-    $.getJSON('/roll', function(dice) {
-        <!--$('#msgArea').html('Server says: ' + data.dice + '<br>');-->
+    $.getJSON('/game/#{game.cid}/roll', function(dice) {
+        <!--$('#msgArea').html('Server says: ' + data + '<br>');-->
       }
     );
   }
   function endTurn() {
+    $.getJSON('/endTurn', function(data) {
+      }
+    );
   }
 h1 #{title}
 div(id='playArea')
   Your game: #{game.cid}
+  div(id='tableBrains')
+  div(id='tableShotguns')
+  div(id='tableDice')
   button(id='rollBtn') Roll
   button(id='endTurnBtn', onclick= 'javascript:endTurn()') End turn
   script
     (function ($) {
-    
-      TurnView = Backbone.View.extend({
+      Table = Backbone.Model.extend({
+        initialize: function() {
+          this.brains = 0;
+          this.shotguns = 0;
+        },
+        addBrains: function(brains) {
+          this.brains = this.brains + brains;
+        },
+        addShotguns: function(shotguns) {
+          this.shotguns = this.shotguns + shotguns;
+        },
+        setActivePlayer: function(player) {
+          
+        }
+      });
+      
+      TableView = Backbone.View.extend({
         el: $('#playArea'),
         initialize: function () {
         },
@@ -53,14 +74,18 @@ div(id='playArea')
         },
         performRoll: function () {
           roll();
+        },
+        render: function() {
+          $('#tableBrains').html('Brains: ' + table.brains);
+          $('#tableShotguns').html('Shotguns: ' + table.shotguns);
         }
       });
       
-      turnview = new TurnView;
+      tableview = new TableView;
+      table = new Table();
     })(jQuery);
   div(id='msgArea')
 div(id='scoreBoard')
-  div(id='tableDice')
   button(id='add-friend') Add Friend
   script
     (function ($) {
@@ -94,9 +119,6 @@ div(id='scoreBoard')
         addFriendLi: function (model) {
           $("#scoreTable").append("<li>" + model.get('name') + "</li>");
         }
-      });
-      object.bind("add", function(msg) {
-        alert("Triggered " + msg);
       });
       
       scoreview = new ScoreView;

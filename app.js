@@ -3,6 +3,7 @@ var express = require('express');
 require('jade');
 var app = module.exports = express.createServer();
 var io = require('socket.io').listen(app);
+var _und = require('underscore');
 
 var Game = require('./lib/game');
 var GameTracker = require('./lib/gametracker');
@@ -62,9 +63,30 @@ app.post('/game/add', function(req, res) {
 });
 
 app.get('/game/:id/roll', function(req, res) {
-  gameTracker.roll(req, function(data) {
-    res.send(data);
+  var gameCid = req.params.id;
+  var game = gameTracker.getByCid(gameCid);
+  //game.roll();
+  // Push game/table state to clients
+  var dice = getDice();
+  var brains = 0;
+  var shotguns = 0;
+  _und.each(dice, function(die) {
+    if (die.side === 'brains') {
+      brains = brains + 1;
+    }
+    if (die.side === 'shotgun') {
+      shotguns = shotguns + 1;
+    }
   });
+  for (i = 0; i < socks.length; i++) {
+    socks[i].emit('roll', {
+      dice: dice,
+      tableBrains: brains,
+      tableShotguns: shotguns,
+      nextPlayer: '',
+      alive: true });
+  }
+  res.send('');
 });
 
 app.get('/game/:id', function(req, res) {
@@ -81,11 +103,16 @@ app.get('/game/:id', function(req, res) {
 });
 
 var socks = new Array();
+
 app.get('/roll', function(req, res) {
   var dice = getDice();
   for (i = 0; i < socks.length; i++) {
     socks[i].emit('roll', { dice: dice });
   }
+  res.send('');
+});
+
+app.get('/endTurn', function(req, res) {
   res.send('');
 });
 
