@@ -79,11 +79,11 @@ app.get('/game/:id/roll', function(req, res) {
     }
   });
   for (i = 0; i < socks.length; i++) {
-    socks[i].emit('roll', {
+    socks[i].emit('updateTable', {
       dice: dice,
       tableBrains: brains,
       tableShotguns: shotguns,
-      nextPlayer: '',
+      activePlayer: game.currentActivePlayer().id,
       alive: true });
   }
   res.send('');
@@ -104,15 +104,18 @@ app.get('/game/:id', function(req, res) {
 
 var socks = new Array();
 
-app.get('/roll', function(req, res) {
-  var dice = getDice();
+app.get('/game/:id/endTurn', function(req, res) {
+  var gameCid = req.params.id;
+  var game = gameTracker.getByCid(gameCid);
+  game.endTurn();
+  var p = game.currentActivePlayer();
   for (i = 0; i < socks.length; i++) {
-    socks[i].emit('roll', { dice: dice });
+    socks[i].emit('updateTable', {
+      tableBrains: 0,
+      tableShotguns: 0,
+      activePlayer: game.currentActivePlayer().id,
+      alive: true });
   }
-  res.send('');
-});
-
-app.get('/endTurn', function(req, res) {
   res.send('');
 });
 

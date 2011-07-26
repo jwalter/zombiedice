@@ -14,14 +14,18 @@ script
   socket.on('news', function (data) {
     socket.emit('my other event', { my: 'data' });
   });
-  socket.on('roll', function (data) {
+  socket.on('updateTable', function (data) {
+    console.log(data);
     table.addBrains(data.tableBrains);
     table.addShotguns(data.tableShotguns);
+    table.setActivePlayer(data.activePlayer);
     tableview.render();
+
     $('#tableDice').html('');
     _.each(data.dice, function(die) {
       var die = ich.die(die);
       $('#tableDice').append(die);
+
     });
   });
   var object = {};
@@ -35,18 +39,19 @@ script
     );
   }
   function endTurn() {
-    $.getJSON('/endTurn', function(data) {
+    $.getJSON('/game/#{game.cid}/endTurn', function(data) {
       }
     );
   }
 h1 #{title}
 div(id='playArea')
   Your game: #{game.cid}
+  div(id='tablePlayer')
   div(id='tableBrains')
   div(id='tableShotguns')
   div(id='tableDice')
   button(id='rollBtn') Roll
-  button(id='endTurnBtn', onclick= 'javascript:endTurn()') End turn
+  button(id='endTurnBtn') End turn
   script
     (function ($) {
       Table = Backbone.Model.extend({
@@ -61,7 +66,7 @@ div(id='playArea')
           this.shotguns = this.shotguns + shotguns;
         },
         setActivePlayer: function(player) {
-          
+          this.activePlayer = player;
         }
       });
       
@@ -70,12 +75,17 @@ div(id='playArea')
         initialize: function () {
         },
         events: {
-          "click #rollBtn":  "performRoll",
+          "click #rollBtn":  "rollAction",
+          "click #endTurnBtn":  "endTurnAction"
         },
-        performRoll: function () {
+        rollAction: function () {
           roll();
         },
+        endTurnAction: function () {
+          endTurn();
+        },
         render: function() {
+          $('#tablePlayer').html('Current player: ' + table.activePlayer);
           $('#tableBrains').html('Brains: ' + table.brains);
           $('#tableShotguns').html('Shotguns: ' + table.shotguns);
         }
