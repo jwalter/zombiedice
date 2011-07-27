@@ -95,6 +95,7 @@ app.get('/game/:id', function(req, res) {
   console.log('Now id is: ' + p.id);
   if (!game.players.get(p.id)) {
     game.addPlayer(p);
+    toAllClients('addPlayer', p.name);
   }
   res.render('games/index.jade', {
     game: game,
@@ -109,15 +110,19 @@ app.get('/game/:id/endTurn', function(req, res) {
   var game = gameTracker.getByCid(gameCid);
   game.endTurn();
   var p = game.currentActivePlayer();
-  for (i = 0; i < socks.length; i++) {
-    socks[i].emit('updateTable', {
+  toAllClients('updateTable', {
       tableBrains: 0,
       tableShotguns: 0,
       activePlayer: game.currentActivePlayer().id,
       alive: true });
-  }
   res.send('');
 });
+
+function toAllClients(action, data) {
+  for (i = 0; i < socks.length; i++) {
+    socks[i].emit(action, data);
+  }
+}
 
 // START Temporary dice stuf
 function getDice() {

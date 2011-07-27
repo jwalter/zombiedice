@@ -1,7 +1,7 @@
 script(src='/socket.io/socket.io.js')
 script(src='/javascripts/ICanHaz.min.js')
 script(src='http://ajax.cdnjs.com/ajax/libs/underscore.js/1.1.4/underscore-min.js')
-script(src='http://ajax.cdnjs.com/ajax/libs/backbone.js/0.3.3/backbone-min.js')
+script(src='/javascripts/backbone.js')
 script(id='die', type='text/html')
   li A {{ color }} die with the {{ side }} side up
 script
@@ -13,6 +13,10 @@ script
   });
   socket.on('news', function (data) {
     socket.emit('my other event', { my: 'data' });
+  });
+  socket.on('addPlayer', function (data) {
+    console.log('Add player: ' + data);
+    players.addByName(data);
   });
   socket.on('updateTable', function (data) {
     console.log(data);
@@ -99,20 +103,26 @@ div(id='scoreBoard')
   button(id='add-friend') Add Friend
   script
     (function ($) {
-      Friend = Backbone.Model.extend({
-        name: null
+      Player = Backbone.Model.extend({
+        name: 'unnamed'
       });
     
-      Friends = Backbone.Collection.extend({
+      Players = Backbone.Collection.extend({
         initialize: function (models, options) {
           this.bind("add", options.view.addFriendLi);
+        },
+        addByName: function(name) {
+          console.log('Add by name: ' + name);
+          var p = new Player({name: name});
+          console.log('Add: ' + p + '(' + p.get('name') + ')');
+          this.add(p);
         }
       });
     
       ScoreView = Backbone.View.extend({
         el: $('#scoreBoard'),
         initialize: function () {
-          this.friends = new Friends( null, { view: this });
+          this.friends = new Players( null, { view: this });
         },
         events: {
           "click #add-friend":  "showPrompt",
@@ -120,18 +130,19 @@ div(id='scoreBoard')
         },
         showPrompt: function () {
           var friend_name = prompt("Who is your friend?");
-          var friend_model = new Friend({ name: friend_name });
-          this.friends.add( friend_model );
+          var friend_model = new Player({ name: friend_name });
+          this.friends.addByName( friend_name );
         },
         performRoll: function () {
           roll();
         },
         addFriendLi: function (model) {
-          $("#scoreTable").append("<li>" + model.get('name') + "</li>");
+          $("#scoreTable > ul").append("<li>" + model.get('name') + "</li>");
         }
       });
       
       scoreview = new ScoreView;
+      players = new Players( null, { view: scoreview });
     })(jQuery);
 
   Current score
