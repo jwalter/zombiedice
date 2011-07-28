@@ -20,8 +20,8 @@ script
   });
   socket.on('updateTable', function (data) {
     console.log(data);
-    table.addBrains(data.tableBrains);
-    table.addShotguns(data.tableShotguns);
+    table.setBrains(data.tableBrains);
+    table.setShotguns(data.tableShotguns);
     table.setActivePlayer(data.activePlayer);
     tableview.render();
 
@@ -69,11 +69,11 @@ div(id='playArea')
           this.brains = 0;
           this.shotguns = 0;
         },
-        addBrains: function(brains) {
-          this.brains = this.brains + brains;
+        setBrains: function(brains) {
+          this.brains = brains;
         },
-        addShotguns: function(shotguns) {
-          this.shotguns = this.shotguns + shotguns;
+        setShotguns: function(shotguns) {
+          this.shotguns = shotguns;
         },
         setActivePlayer: function(player) {
           this.activePlayer = player;

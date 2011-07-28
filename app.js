@@ -65,24 +65,13 @@ app.post('/game/add', function(req, res) {
 app.get('/game/:id/roll', function(req, res) {
   var gameCid = req.params.id;
   var game = gameTracker.getByCid(gameCid);
-  //game.roll();
-  // Push game/table state to clients
-  var dice = getDice();
-  var brains = 0;
-  var shotguns = 0;
-  _und.each(dice, function(die) {
-    if (die.side === 'brains') {
-      brains = brains + 1;
-    }
-    if (die.side === 'shotgun') {
-      shotguns = shotguns + 1;
-    }
-  });
+  game.roll();
+  var turnState = game.turnState();
   for (i = 0; i < socks.length; i++) {
     socks[i].emit('updateTable', {
-      dice: dice,
-      tableBrains: brains,
-      tableShotguns: shotguns,
+      dice: turnState.dice,
+      tableBrains: turnState.tableBrains,
+      tableShotguns: turnState.tableShotguns,
       activePlayer: game.currentActivePlayer().id,
       alive: true });
   }
@@ -121,27 +110,6 @@ function toAllClients(action, data) {
     socks[i].emit(action, data);
   }
 }
-
-// START Temporary dice stuf
-function getDice() {
-  var result = new Array();
-  for (var i = 0; i < 3; i++) {
-    rollDie(function(die) {
-      result[i] = die;
-    });
-  }
-  return result;
-}
-
-var dieColors = ["red", "yellow", "green"];
-var dieSides = ["shotgun", "feet", "brains"];
-
-function rollDie(fn) {
-  var colorIdx = Math.floor(Math.random()*3);
-  var sideIdx = Math.floor(Math.random()*3);
-  fn({color: dieColors[colorIdx], side: dieSides[sideIdx]});
-}
-// END Temporary dice stuf
 
 io.sockets.on('connection', function (socket) {
   socket.emit('news', { hello: 'world' });
