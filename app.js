@@ -110,11 +110,9 @@ app.get('/game/:id/endTurn', function(req, res) {
   var game = gameTracker.getByCid(gameCid);
   game.endTurn();
   var p = game.currentActivePlayer();
-  toAllClients('updateTable', {
-      tableBrains: 0,
-      tableShotguns: 0,
+  toAllClients('resetTable', {
       activePlayer: game.currentActivePlayer().id,
-      alive: true });
+    });
   res.send('');
 });
 

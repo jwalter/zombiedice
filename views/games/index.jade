@@ -32,6 +32,12 @@ script
 
     });
   });
+  socket.on('resetTable', function (data) {
+    table.reset();
+    $('#tableDice').html('');
+    table.setActivePlayer(data.activePlayer);
+    tableview.render();
+  });
   var object = {};
 
   _.extend(object, Backbone.Events);
@@ -71,6 +77,10 @@ div(id='playArea')
         },
         setActivePlayer: function(player) {
           this.activePlayer = player;
+        },
+        reset: function() {
+          this.brains = 0;
+          this.shotguns = 0;
         }
       });
       
