@@ -5,10 +5,12 @@ script(src='/javascripts/backbone.js')
 script(id='die', type='text/html')
   li A {{ color }} die with the {{ side }} side up
 script
+  var playerId = '#{playerid}';
   var socket = io.connect();
   socket.on('connect', function(data) {
-    socket.emit('join game', { data: '#{game.cid}'}, function(joined) {
+    socket.emit('join game', { gameId: '#{gameId}'}, function(joined) {
       $('#msgArea').html('Joined game: ' + joined);
+      setButtonVisibility(joined);
     });
   });
   socket.on('news', function (data) {
@@ -37,10 +39,36 @@ script
     $('#tableDice').html('');
     table.setActivePlayer(data.activePlayer);
     tableview.render();
+    setButtonVisibility(data.activePlayer);
   });
   var object = {};
 
   _.extend(object, Backbone.Events);
+
+  function setButtonVisibility(activePlayerId) {
+    if (activePlayerId === playerId) {
+      showButtons();
+    } else {
+      hideButtons();
+    }
+  }
+
+  function showButtons() {
+    onTurnButtons(function(name) {
+      $(name).removeClass('hidden');
+    });
+  }
+
+  function hideButtons() {
+    onTurnButtons(function(name) {
+      $(name).addClass('hidden');
+    });
+  }
+
+  function onTurnButtons(fn) {
+    fn('#rollBtn');
+    fn('#endTurnBtn');
+  }
 
   function roll() {
     $.getJSON('/game/#{game.cid}/roll', function(dice) {
@@ -60,8 +88,8 @@ div(id='playArea')
   div(id='tableBrains')
   div(id='tableShotguns')
   div(id='tableDice')
-  button(id='rollBtn') Roll
-  button(id='endTurnBtn') End turn
+  button(id='rollBtn', class='hidden') Roll
+  button(id='endTurnBtn', class='hidden') End turn
   script
     (function ($) {
       Table = Backbone.Model.extend({

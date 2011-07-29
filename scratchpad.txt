@@ -1,3 +1,3 @@
-Only show Roll and End Turn buttons for the current player
 Update score table when player ends his turn
 Only show Roll button when player is alive
+Update list of current games automatically using socket.io

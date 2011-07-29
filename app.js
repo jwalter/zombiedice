@@ -3,7 +3,6 @@ var express = require('express');
 require('jade');
 var app = module.exports = express.createServer();
 var io = require('socket.io').listen(app);
-var _und = require('underscore');
 
 var Game = require('./lib/game');
 var GameTracker = require('./lib/gametracker');
@@ -88,7 +87,9 @@ app.get('/game/:id', function(req, res) {
   }
   res.render('games/index.jade', {
     game: game,
-    title: game.name
+    gameId: game.id,
+    title: game.name,
+    playerid: p.id
   });
 });
 
@@ -117,9 +118,9 @@ io.sockets.on('connection', function (socket) {
     console.log(data);
   });
   socket.on('join game', function (data, fn) {
-    var g = gameTracker.getByCid(data);
-    console.log('Join game: ' + data);
-    fn('Success');
+    console.log('Join game: ' + data.gameId);
+    var g = gameTracker.get(data.gameId);
+    fn(g.currentActivePlayer().id);
   });
   socks.push(socket);
 });
