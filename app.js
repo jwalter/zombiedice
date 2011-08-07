@@ -54,6 +54,8 @@ app.get('/name/:name', function(req, res) {
   if (req.params) {
     console.log('name: ' + req.params.name);
     req.session.player.name = req.params.name;
+    var p = players.get(req.session.player.id);
+    p.name = req.params.name;
   }
   res.redirect('/');
 });
