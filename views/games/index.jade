@@ -4,11 +4,17 @@ script(src='http://ajax.cdnjs.com/ajax/libs/underscore.js/1.1.4/underscore-min.j
 script(src='/javascripts/backbone.js')
 script(id='die', type='text/html')
   li A {{ color }} die with the {{ side }} side up
+script(id='player', type='text/html')
+  li {{ name }} - 
+  div(id='{{ id }}'){{ score }}
 script
   var playerId = '#{playerid}';
   var socket = io.connect();
   socket.on('connect', function(data) {
-    socket.emit('join game', { gameId: '#{gameId}'}, function(joined) {
+    socket.emit('join game', { gameId: '#{gameId}'}, function(joined, serverPlayers) {
+      _.each(serverPlayers, function(p) {
+        players.add(new Player(p));
+      })
       $('#msgArea').html('Joined game: ' + joined);
       setButtonVisibility(joined);
     });
@@ -17,8 +23,9 @@ script
     socket.emit('my other event', { my: 'data' });
   });
   socket.on('addPlayer', function (data) {
-    console.log('Add player: ' + data);
-    players.addByName(data);
+    console.log('Add player: ');
+    console.log(data);
+    players.add(new Player(data));
   });
   socket.on('updateTable', function (data) {
     console.log(data);
@@ -39,6 +46,7 @@ script
     $('#tableDice').html('');
     table.setActivePlayer(data.activePlayer);
     tableview.render();
+    updateScore(data.scoreUpdate);
     setButtonVisibility(data.activePlayer);
   });
   var object = {};
@@ -80,6 +88,11 @@ script
     $.getJSON('/game/#{game.cid}/endTurn', function(data) {
       }
     );
+  }
+  function updateScore(data) {
+    console.log(data);
+    var p = players.get(data.playerId);
+    p.set({score: data.score});
   }
 h1 #{title}
 div(id='playArea')
@@ -142,10 +155,27 @@ div(id='scoreBoard')
   script
     (function ($) {
       Player = Backbone.Model.extend({
-        name: 'unnamed'
+        name: 'unnamed',
+        initialize: function(options) {
+          if (options.score) {
+            this.score = options.score;
+          }
+          if (options.name) {
+            this.name = options.name;
+          }
+          if (options.id) {
+            this.id = options.id;
+          }
+          console.log('Player.initialize');
+          console.log(options);
+          this.bind("change:score", function(model) {
+            $("#" + model.id).html(model.get('score'));
+          });
+        }
       });
     
       Players = Backbone.Collection.extend({
+        model: Player,
         initialize: function (models, options) {
           this.bind("add", options.view.addFriendLi);
         },
@@ -175,7 +205,11 @@ div(id='scoreBoard')
           roll();
         },
         addFriendLi: function (model) {
-          $("#scoreTable > ul").append("<li>" + model.get('name') + "</li>");
+          var playerTemplate = ich.player({name: model.get('name'), score: model.get('score'), id: model.id});
+          $("#scoreTable > ul").append(playerTemplate);
+        },
+        render: function(model) {
+          $("#scoreTable > ul").append("<li>" + model.get('name') + ", " + model.get('score') + "</li>");
         }
       });
       
@@ -186,6 +220,3 @@ div(id='scoreBoard')
   Current score
   div(id='scoreTable')
     ul
-      - game.players.forEach(function(item){
-        li= item.name
-      - })

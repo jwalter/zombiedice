@@ -46,5 +46,15 @@ module.exports = {
       g.endTurn();
       g.endTurn();
       assert.equal(g.currentActivePlayer(), p1);
+    },
+    'new game has zero number of scores': function() {
+      var g = new Game();
+      assert.length(g.scores, 0);
+    },
+    'score uses player id as key': function() {
+      var g = new Game();
+      var p = new Player();
+      g.addPlayer(p);
+      assert.equal(g.scores[p.id], 0);
     }
 };

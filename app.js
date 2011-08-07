@@ -7,7 +7,9 @@ var io = require('socket.io').listen(app);
 var Game = require('./lib/game');
 var GameTracker = require('./lib/gametracker');
 var Player = require('./lib/player');
+var PlayerCollection = require('./lib/playercollection.js');
 var gameTracker = new GameTracker();
+var players = new PlayerCollection();
 
 // Configuration
 app.configure(function() {
@@ -24,6 +26,8 @@ app.configure(function() {
 
 app.configure('development', function() {
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); 
+  var g = new Game({name: 'test game'});
+  gameTracker.add(g);
 });
 
 app.configure('production', function() {
@@ -33,7 +37,9 @@ app.configure('production', function() {
 // Routes
 app.get('/', function(req, res) {
   if (!req.session.player) {
-    req.session.player = new Player({name: 'anonymous'});
+    var p = new Player({name: 'anonymous'});
+    req.session.player = p;
+    players.add(p);
     console.log('Create new player: ' + req.session.player.cid);
   }
   res.render('index', {
@@ -61,29 +67,14 @@ app.post('/game/add', function(req, res) {
   res.send({result: 'Created new game '});
 });
 
-app.get('/game/:id/roll', function(req, res) {
-  var gameCid = req.params.id;
-  var game = gameTracker.getByCid(gameCid);
-  game.roll();
-  var turnState = game.turnState();
-  for (i = 0; i < socks.length; i++) {
-    socks[i].emit('updateTable', {
-      dice: turnState.dice,
-      tableBrains: turnState.tableBrains,
-      tableShotguns: turnState.tableShotguns,
-      activePlayer: game.currentActivePlayer().id,
-      alive: true });
-  }
-  res.send('');
-});
-
 app.get('/game/:id', function(req, res) {
   var game = gameTracker.getByCid(req.params.id);
-  var p = req.session.player;
+  var pid = req.session.player.id;
+  var p = players.get(pid);
   console.log('Now id is: ' + p.id);
   if (!game.players.get(p.id)) {
     game.addPlayer(p);
-    toAllClients('addPlayer', p.name);
+    toAllClients('addPlayer', p.toJSON());
   }
   res.render('games/index.jade', {
     game: game,
@@ -91,6 +82,20 @@ app.get('/game/:id', function(req, res) {
     title: game.name,
     playerid: p.id
   });
+});
+
+app.get('/game/:id/roll', function(req, res) {
+  var gameCid = req.params.id;
+  var game = gameTracker.getByCid(gameCid);
+  game.roll();
+  var turnState = game.turnState();
+  toAllClients('updateTable', {
+      dice: turnState.dice,
+      tableBrains: turnState.tableBrains,
+      tableShotguns: turnState.tableShotguns,
+      activePlayer: game.currentActivePlayer().id,
+      alive: true });
+  res.send('');
 });
 
 var socks = new Array();
@@ -102,6 +107,7 @@ app.get('/game/:id/endTurn', function(req, res) {
   var p = game.currentActivePlayer();
   toAllClients('resetTable', {
       activePlayer: game.currentActivePlayer().id,
+      scoreUpdate: { playerId: p.id, score: game.scoreOf(p) }
     });
   res.send('');
 });
@@ -120,11 +126,12 @@ io.sockets.on('connection', function (socket) {
   socket.on('join game', function (data, fn) {
     console.log('Join game: ' + data.gameId);
     var g = gameTracker.get(data.gameId);
-    fn(g.currentActivePlayer().id);
+    if (g) {
+      fn(g.currentActivePlayer().id, g.players);
+    }
   });
   socks.push(socket);
 });
-// Prototype socketio stuff end
 
 app.listen(11033);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
