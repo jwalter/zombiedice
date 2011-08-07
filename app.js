@@ -103,11 +103,11 @@ var socks = new Array();
 app.get('/game/:id/endTurn', function(req, res) {
   var gameCid = req.params.id;
   var game = gameTracker.getByCid(gameCid);
+  var previousPlayer = game.currentActivePlayer();
   game.endTurn();
-  var p = game.currentActivePlayer();
   toAllClients('resetTable', {
       activePlayer: game.currentActivePlayer().id,
-      scoreUpdate: { playerId: p.id, score: game.scoreOf(p) }
+      scoreUpdate: { playerId: previousPlayer.id, score: game.scoreOf(previousPlayer) }
     });
   res.send('');
 });
