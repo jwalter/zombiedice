@@ -1,3 +1,3 @@
-Update score table when player ends his turn
 Only show Roll button when player is alive
+Start looking at using GameUtils
 Update list of current games automatically using socket.io
