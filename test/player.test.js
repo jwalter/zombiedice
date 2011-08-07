@@ -19,7 +19,7 @@ module.exports = {
     },
     'JSON should contain correct score': function() {
       var score = 15;
-      var p = new Player({score: score});
-      assert.equal(p.toJSON().score, score);
+      var p = new Player();
+      assert.equal(p.toJSON(score).score, score);
     }
 };

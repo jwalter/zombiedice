@@ -76,7 +76,7 @@ app.get('/game/:id', function(req, res) {
   console.log('Now id is: ' + p.id);
   if (!game.players.get(p.id)) {
     game.addPlayer(p);
-    toAllClients('addPlayer', p.toJSON());
+    toAllClients('addPlayer', p.toJSON(game.scoreOf(p)));
   }
   res.render('games/index.jade', {
     game: game,
@@ -129,7 +129,7 @@ io.sockets.on('connection', function (socket) {
     console.log('Join game: ' + data.gameId);
     var g = gameTracker.get(data.gameId);
     if (g) {
-      fn(g.currentActivePlayer().id, g.players);
+      fn(g.currentActivePlayer().id, g.players, g.scores);
     }
   });
   socks.push(socket);

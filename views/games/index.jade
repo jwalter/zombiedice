@@ -11,8 +11,9 @@ script
   var playerId = '#{playerid}';
   var socket = io.connect();
   socket.on('connect', function(data) {
-    socket.emit('join game', { gameId: '#{gameId}'}, function(joined, serverPlayers) {
+    socket.emit('join game', { gameId: '#{gameId}'}, function(joined, serverPlayers, scores) {
       _.each(serverPlayers, function(p) {
+        p.score = scores[p.id];
         players.add(new Player(p));
       })
       $('#msgArea').html('Joined game: ' + joined);
